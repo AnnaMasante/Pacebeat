@@ -9,6 +9,7 @@ function makeTrack(
     title: overrides.spotifyId,
     artist: "Test Artist",
     durationMs: 3 * 60_000,
+    isrc: null,
     ...overrides,
   };
 }
