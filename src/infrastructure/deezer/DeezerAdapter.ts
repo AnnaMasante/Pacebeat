@@ -15,8 +15,21 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Deezer's tempo detection frequently reports an "octave" error — half or double the
+// real tempo — especially on syncopated genres like reggae or hip-hop. Fold the value
+// back into a plausible tempo range instead of feeding the raw detector output into the
+// BPM-percentile curve, where a single octave error skews the whole pace progression.
+const MIN_PLAUSIBLE_BPM = 40;
+const MAX_PLAUSIBLE_BPM = 190;
+
 function normalizeBpm(bpm: number): number | null {
-  return bpm > 0 ? bpm : null;
+  if (bpm <= 0) return null;
+
+  let corrected = bpm;
+  while (corrected > MAX_PLAUSIBLE_BPM) corrected /= 2;
+  while (corrected < MIN_PLAUSIBLE_BPM) corrected *= 2;
+
+  return corrected;
 }
 
 export class DeezerAdapter implements TempoLookupPort {

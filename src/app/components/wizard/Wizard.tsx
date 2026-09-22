@@ -4,12 +4,11 @@ import { useState } from "react";
 import type { RaceConfig } from "@/domain/entities/RaceConfig";
 import type { GeneratedPlaylist } from "@/domain/entities/GeneratedPlaylist";
 import type { StreamEvent } from "@/app/api/generate/route";
-import { confirmCreatePlaylist } from "@/app/actions/confirmCreate";
 import { ConfigureForm } from "./ConfigureForm";
 import { PreviewPanel } from "./PreviewPanel";
-import { SuccessPanel } from "./SuccessPanel";
-import { Spinner } from "@/app/components/ui/Spinner";
-import { ProgressBar } from "@/app/components/ui/ProgressBar";
+import { ManualCreatePanel } from "./ManualCreatePanel";
+import { Card } from "@/app/components/ui/Card";
+import { LatticeLoader } from "@/app/components/ui/LatticeLoader";
 import { Toast } from "@/app/components/ui/Toast";
 
 type WizardStep =
@@ -17,8 +16,7 @@ type WizardStep =
   | { name: "generating"; stage: "fetching-tracks" }
   | { name: "generating"; stage: "enriching-bpm"; done: number; total: number }
   | { name: "preview"; playlist: GeneratedPlaylist; config: RaceConfig }
-  | { name: "creating"; playlist: GeneratedPlaylist; config: RaceConfig }
-  | { name: "success"; externalUrl: string }
+  | { name: "manual"; playlist: GeneratedPlaylist; playlistName: string }
   | { name: "error"; message: string };
 
 export function Wizard() {
@@ -81,47 +79,45 @@ export function Wizard() {
     }
   }
 
-  async function handleConfirm(playlist: GeneratedPlaylist, config: RaceConfig) {
-    setStep({ name: "creating", playlist, config });
-    try {
-      const result = await confirmCreatePlaylist({
-        name: buildPlaylistName(config),
-        description: "Générée par PaceBeat",
-        trackUris: playlist.tracks.map((track) => track.uri),
-      });
-      setStep({ name: "success", externalUrl: result.externalUrl });
-    } catch {
-      setStep({
-        name: "error",
-        message: "La création sur Spotify a échoué. Réessaie dans un instant.",
-      });
-    }
+  function handleConfirm(playlist: GeneratedPlaylist, config: RaceConfig) {
+    // Spotify's Development Mode app write access (create playlist) is blocked for
+    // non-allowlisted users as of the Feb/Mar 2026 developer access changes, so the
+    // playlist is built manually by the user instead of via the write API.
+    setStep({ name: "manual", playlist, playlistName: buildPlaylistName(config) });
   }
 
   switch (step.name) {
     case "configure":
       return <ConfigureForm onSubmit={handleGenerate} isSubmitting={false} />;
     case "generating":
-      return step.stage === "fetching-tracks" ? (
-        <Spinner label="Récupération des morceaux..." />
-      ) : (
-        <ProgressBar label="Analyse du tempo..." done={step.done} total={step.total} />
+      return (
+        <Card className="flex w-full max-w-[28rem] flex-col items-center gap-md rounded-hero p-lg">
+          <LatticeLoader
+            label={
+              step.stage === "fetching-tracks"
+                ? "Récupération des morceaux"
+                : `Analyse du tempo (${step.done}/${step.total})`
+            }
+            pattern="orbit"
+            color="var(--color-primary)"
+            glow
+            glowColor="var(--color-primary)"
+          />
+        </Card>
       );
     case "preview":
       return (
         <PreviewPanel
           playlist={step.playlist}
-          isConfirming={false}
           onBack={() => setStep({ name: "configure" })}
           onConfirm={() => handleConfirm(step.playlist, step.config)}
         />
       );
-    case "creating":
-      return <Spinner label="Création sur Spotify..." />;
-    case "success":
+    case "manual":
       return (
-        <SuccessPanel
-          externalUrl={step.externalUrl}
+        <ManualCreatePanel
+          playlistName={step.playlistName}
+          playlist={step.playlist}
           onCreateAnother={() => setStep({ name: "configure" })}
         />
       );

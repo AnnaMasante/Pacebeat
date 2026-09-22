@@ -15,7 +15,7 @@
   --color-ink-low: #727272;
 
   --font-display: var(--font-plus-jakarta-sans);
-  --font-body: var(--font-inter);
+  --font-body: var(--font--system-ui);
 
   --radius-pill: 9999px;
   --radius-hero: 3rem;

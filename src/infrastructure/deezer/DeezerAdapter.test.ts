@@ -46,6 +46,40 @@ describe("DeezerAdapter", () => {
     expect(requestedUrl).toBe("https://api.deezer.com/track/isrc:GBUM71029601");
   });
 
+  it("halves an implausibly high bpm (octave detection error)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ bpm: 206.72 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const adapter = new DeezerAdapter();
+    const track = makeTrack({
+      spotifyId: "octave-high",
+      title: "Could You Be Loved",
+      artist: "Bob Marley & The Wailers",
+      isrc: "GBUM71029608",
+    });
+
+    const [result] = await adapter.enrichWithBpm([track]);
+
+    expect(result.bpm).toBeCloseTo(103.36);
+  });
+
+  it("doubles an implausibly low bpm (octave detection error)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ bpm: 30 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const adapter = new DeezerAdapter();
+    const track = makeTrack({
+      spotifyId: "octave-low",
+      title: "Slow Detection Track",
+      artist: "Some Artist",
+      isrc: "GBUM71029609",
+    });
+
+    const [result] = await adapter.enrichWithBpm([track]);
+
+    expect(result.bpm).toBe(60);
+  });
+
   it("resolves bpm to null when Deezer reports bpm: 0 (unknown tempo)", async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ bpm: 0 }));
     vi.stubGlobal("fetch", fetchMock);

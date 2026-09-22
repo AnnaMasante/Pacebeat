@@ -9,10 +9,9 @@ interface PreviewPanelProps {
   playlist: GeneratedPlaylist;
   onConfirm: () => void;
   onBack: () => void;
-  isConfirming: boolean;
 }
 
-export function PreviewPanel({ playlist, onConfirm, onBack, isConfirming }: PreviewPanelProps) {
+export function PreviewPanel({ playlist, onConfirm, onBack }: PreviewPanelProps) {
   return (
     <Card className="flex w-full max-w-[36rem] flex-col gap-lg rounded-hero p-lg">
       <div>
@@ -46,12 +45,8 @@ export function PreviewPanel({ playlist, onConfirm, onBack, isConfirming }: Prev
         <Button variant="ghost" onClick={onBack}>
           Retour
         </Button>
-        <Button
-          onClick={onConfirm}
-          disabled={isConfirming || playlist.tracks.length === 0}
-          className="flex-1"
-        >
-          {isConfirming ? "Création..." : "Créer sur Spotify"}
+        <Button onClick={onConfirm} disabled={playlist.tracks.length === 0} className="flex-1">
+          Obtenir la liste des titres
         </Button>
       </div>
     </Card>
