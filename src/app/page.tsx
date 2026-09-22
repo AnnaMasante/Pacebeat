@@ -1,4 +1,4 @@
-import { auth, signIn } from "@/infrastructure/auth/authOptions";
+import { auth, signIn, signOut } from "@/infrastructure/auth/authOptions";
 import { Wizard } from "@/app/components/wizard/Wizard";
 import { Button } from "@/app/components/ui/Button";
 
@@ -8,7 +8,20 @@ export default async function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-xl px-md py-xl">
       {session?.accessToken ? (
-        <Wizard />
+        <div className="flex w-full flex-1 flex-col items-center gap-md">
+          <form
+            action={async () => {
+              "use server";
+              await signOut();
+            }}
+            className="self-end"
+          >
+            <button type="submit" className="font-body text-sm text-ink-medium underline">
+              Se déconnecter
+            </button>
+          </form>
+          <Wizard />
+        </div>
       ) : (
         <div className="flex flex-col items-center gap-lg text-center">
           <div>

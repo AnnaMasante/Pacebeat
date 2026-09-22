@@ -1,19 +1,13 @@
 import { SpotifyMusicSourceAdapter } from "@/infrastructure/spotify/SpotifyMusicSourceAdapter";
 import { SpotifyPlaylistPublisherAdapter } from "@/infrastructure/spotify/SpotifyPlaylistPublisherAdapter";
-import { GetSongBpmAdapter } from "@/infrastructure/getsongbpm/GetSongBpmAdapter";
+import { DeezerAdapter } from "@/infrastructure/deezer/DeezerAdapter";
 import { GenerateRacePlaylist } from "@/application/use-cases/GenerateRacePlaylist";
 import { ConfirmAndCreatePlaylist } from "@/application/use-cases/ConfirmAndCreatePlaylist";
 import { ListPlaylistSources } from "@/application/use-cases/ListPlaylistSources";
 
-function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`Missing required environment variable: ${name}`);
-  return value;
-}
-
 export function createGenerateRacePlaylistUseCase(accessToken: string): GenerateRacePlaylist {
   const musicSource = new SpotifyMusicSourceAdapter(accessToken);
-  const tempoLookup = new GetSongBpmAdapter(requireEnv("GETSONGBPM_API_KEY"));
+  const tempoLookup = new DeezerAdapter();
   return new GenerateRacePlaylist(musicSource, tempoLookup);
 }
 

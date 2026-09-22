@@ -4,5 +4,6 @@ export interface Track {
   title: string;
   artist: string;
   durationMs: number;
+  isrc: string | null;
   bpm: number | null;
 }

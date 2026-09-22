@@ -13,10 +13,11 @@ interface SpotifyTrackObject {
   duration_ms: number;
   artists: SpotifyArtist[];
   is_local: boolean;
+  external_ids?: { isrc?: string };
 }
 
 interface SpotifyPlaylistTrackItem {
-  track: SpotifyTrackObject | null;
+  item: SpotifyTrackObject | null;
 }
 
 interface SpotifySavedTrackItem {
@@ -47,10 +48,10 @@ export class SpotifyMusicSourceAdapter implements MusicSourcePort {
   async getPlaylistTracks(playlistId: string): Promise<Track[]> {
     const items = await fetchAllPages<SpotifyPlaylistTrackItem>(
       this.accessToken,
-      `/playlists/${playlistId}/tracks?limit=100`,
+      `/playlists/${playlistId}/items?limit=100`,
     );
     return items
-      .map((item) => item.track)
+      .map((item) => item.item)
       .filter(isUsableTrack)
       .map(toDomainTrack);
   }
@@ -78,6 +79,7 @@ function toDomainTrack(track: SpotifyTrackObject): Track {
     title: track.name,
     artist: track.artists[0]?.name ?? "Unknown artist",
     durationMs: track.duration_ms,
+    isrc: track.external_ids?.isrc ?? null,
     bpm: null,
   };
 }
