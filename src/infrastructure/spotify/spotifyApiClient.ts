@@ -26,6 +26,11 @@ export async function spotifyFetch<T>(
 
   if (!response.ok) {
     const body = await response.text();
+    console.error(`Spotify API error on ${path}`, {
+      status: response.status,
+      headers: Object.fromEntries(response.headers.entries()),
+      body,
+    });
     throw new SpotifyApiError(`Spotify API error on ${path}: ${body}`, response.status);
   }
 
