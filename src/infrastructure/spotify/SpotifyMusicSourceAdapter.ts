@@ -17,7 +17,7 @@ interface SpotifyTrackObject {
 }
 
 interface SpotifyPlaylistTrackItem {
-  item: SpotifyTrackObject | null;
+  track: SpotifyTrackObject | null;
 }
 
 interface SpotifySavedTrackItem {
@@ -27,7 +27,7 @@ interface SpotifySavedTrackItem {
 interface SpotifyPlaylistObject {
   id: string;
   name: string;
-  items?: { total: number };
+  tracks?: { total: number };
 }
 
 export class SpotifyMusicSourceAdapter implements MusicSourcePort {
@@ -41,17 +41,17 @@ export class SpotifyMusicSourceAdapter implements MusicSourcePort {
     return playlists.map((playlist) => ({
       id: playlist.id,
       name: playlist.name,
-      trackCount: playlist.items?.total ?? 0,
+      trackCount: playlist.tracks?.total ?? 0,
     }));
   }
 
   async getPlaylistTracks(playlistId: string): Promise<Track[]> {
     const items = await fetchAllPages<SpotifyPlaylistTrackItem>(
       this.accessToken,
-      `/playlists/${playlistId}/items?limit=100`,
+      `/playlists/${playlistId}/tracks?limit=100`,
     );
     return items
-      .map((item) => item.item)
+      .map((item) => item.track)
       .filter(isUsableTrack)
       .map(toDomainTrack);
   }
