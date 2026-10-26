@@ -1,6 +1,6 @@
 import type { Track } from "@/domain/entities/Track";
 import type { MusicSourcePort, PlaylistSummary } from "@/application/ports/MusicSourcePort";
-import { fetchAllPages } from "./spotifyApiClient";
+import { fetchAllPages, SpotifyApiError } from "./spotifyApiClient";
 
 interface SpotifyArtist {
   name: string;
@@ -17,7 +17,7 @@ interface SpotifyTrackObject {
 }
 
 interface SpotifyPlaylistTrackItem {
-  track: SpotifyTrackObject | null;
+  item: SpotifyTrackObject | null;
 }
 
 interface SpotifySavedTrackItem {
@@ -27,7 +27,7 @@ interface SpotifySavedTrackItem {
 interface SpotifyPlaylistObject {
   id: string;
   name: string;
-  tracks?: { total: number };
+  items?: { total: number };
 }
 
 export class SpotifyMusicSourceAdapter implements MusicSourcePort {
@@ -38,23 +38,27 @@ export class SpotifyMusicSourceAdapter implements MusicSourcePort {
       this.accessToken,
       "/me/playlists?limit=50",
     );
-    if (playlists[0]) {
-      console.error("[diag] first playlist raw object", JSON.stringify(playlists[0]));
-    }
     return playlists.map((playlist) => ({
       id: playlist.id,
       name: playlist.name,
-      trackCount: playlist.tracks?.total ?? 0,
+      trackCount: playlist.items?.total ?? 0,
     }));
   }
 
   async getPlaylistTracks(playlistId: string): Promise<Track[]> {
     const items = await fetchAllPages<SpotifyPlaylistTrackItem>(
       this.accessToken,
-      `/playlists/${playlistId}/tracks?limit=100`,
-    );
+      `/playlists/${playlistId}/items?limit=100`,
+    ).catch((err) => {
+      if (err instanceof SpotifyApiError && err.status === 403) {
+        throw new Error(
+          "Cette playlist n'est accessible que si tu en es le propriétaire ou collaborateur.",
+        );
+      }
+      throw err;
+    });
     return items
-      .map((item) => item.track)
+      .map((item) => item.item)
       .filter(isUsableTrack)
       .map(toDomainTrack);
   }
