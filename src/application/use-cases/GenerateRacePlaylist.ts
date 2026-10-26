@@ -24,12 +24,17 @@ export class GenerateRacePlaylist {
       config.source.type === "liked"
         ? await this.musicSource.getLikedSongs()
         : await this.musicSource.getPlaylistTracks(config.source.playlistId);
+    console.error(`[generate] fetched ${rawTracks.length} raw tracks`);
 
     const enrichedTracks = await this.tempoLookup.enrichWithBpm(rawTracks, (done, total) =>
       onProgress?.({ stage: "enriching-bpm", done, total }),
     );
     const pool: TempoTrack[] = enrichedTracks.filter(
       (track): track is TempoTrack => track.bpm !== null,
+    );
+    console.error(
+      `[generate] ${pool.length}/${enrichedTracks.length} tracks had a usable BPM ` +
+        `(${enrichedTracks.filter((t) => !t.isrc).length} missing ISRC)`,
     );
 
     const result = buildCurvePlaylist(pool, {

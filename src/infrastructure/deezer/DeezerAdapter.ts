@@ -72,17 +72,26 @@ export class DeezerAdapter implements TempoLookupPort {
       return { ...track, bpm: cached };
     }
 
-    const bpm = await this.lookupBpm(track.isrc).catch(() => null);
+    const bpm = await this.lookupBpm(track.isrc).catch((err) => {
+      console.error(`Deezer BPM lookup failed for ISRC ${track.isrc}`, err);
+      return null;
+    });
     setCachedBpm(track.isrc, bpm);
     return { ...track, bpm };
   }
 
   private async lookupBpm(isrc: string): Promise<number | null> {
     const response = await fetch(`${DEEZER_BASE_URL}/track/isrc:${encodeURIComponent(isrc)}`);
-    if (!response.ok) return null;
+    if (!response.ok) {
+      console.error(`Deezer API error for ISRC ${isrc}`, { status: response.status });
+      return null;
+    }
 
     const data = (await response.json()) as DeezerTrackObject;
-    if (data.error) return null;
+    if (data.error) {
+      console.error(`Deezer track error for ISRC ${isrc}`, data.error);
+      return null;
+    }
 
     return normalizeBpm(data.bpm);
   }
