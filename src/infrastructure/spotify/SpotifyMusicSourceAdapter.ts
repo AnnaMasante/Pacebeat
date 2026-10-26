@@ -28,8 +28,6 @@ interface SpotifyPlaylistObject {
   id: string;
   name: string;
   items?: { total: number };
-  owner?: { id: string };
-  collaborative?: boolean;
 }
 
 export class SpotifyMusicSourceAdapter implements MusicSourcePort {
@@ -39,12 +37,6 @@ export class SpotifyMusicSourceAdapter implements MusicSourcePort {
     const playlists = await fetchAllPages<SpotifyPlaylistObject>(
       this.accessToken,
       "/me/playlists?limit=50",
-    );
-    console.error(
-      "[diag] playlist ownership",
-      JSON.stringify(
-        playlists.map((p) => ({ name: p.name, owner: p.owner?.id, collab: p.collaborative })),
-      ),
     );
     return playlists.map((playlist) => ({
       id: playlist.id,
