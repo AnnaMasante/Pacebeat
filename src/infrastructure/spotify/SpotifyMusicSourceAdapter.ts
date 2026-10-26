@@ -38,6 +38,9 @@ export class SpotifyMusicSourceAdapter implements MusicSourcePort {
       this.accessToken,
       "/me/playlists?limit=50",
     );
+    if (playlists[0]) {
+      console.error("[diag] first playlist raw object", JSON.stringify(playlists[0]));
+    }
     return playlists.map((playlist) => ({
       id: playlist.id,
       name: playlist.name,
