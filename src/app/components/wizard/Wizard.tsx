@@ -8,7 +8,7 @@ import { ConfigureForm } from "./ConfigureForm";
 import { PreviewPanel } from "./PreviewPanel";
 import { ManualCreatePanel } from "./ManualCreatePanel";
 import { Card } from "@/app/components/ui/Card";
-import { LatticeLoader } from "@/app/components/ui/LatticeLoader";
+import { BeatLoader } from "@/app/components/ui/BeatLoader";
 import { Toast } from "@/app/components/ui/Toast";
 
 type WizardStep =
@@ -91,17 +91,14 @@ export function Wizard() {
       return <ConfigureForm onSubmit={handleGenerate} isSubmitting={false} />;
     case "generating":
       return (
-        <Card className="flex w-full max-w-[28rem] flex-col items-center gap-md rounded-hero p-lg">
-          <LatticeLoader
+        <Card className="lp-panel">
+          <BeatLoader
             label={
               step.stage === "fetching-tracks"
                 ? "Récupération des morceaux"
                 : `Analyse du tempo (${step.done}/${step.total})`
             }
-            pattern="orbit"
-            color="var(--color-primary)"
-            glow
-            glowColor="var(--color-primary)"
+            progress={step.stage === "enriching-bpm" ? step.done / step.total : undefined}
           />
         </Card>
       );
@@ -123,12 +120,12 @@ export function Wizard() {
       );
     case "error":
       return (
-        <div className="flex flex-col items-center gap-md">
+        <div className="lp-panel items-start">
           <Toast variant="error">{step.message}</Toast>
           <button
             type="button"
             onClick={() => setStep({ name: "configure" })}
-            className="font-body text-sm text-ink-medium underline"
+            className="lp-link text-sm"
           >
             Recommencer
           </button>
@@ -144,5 +141,5 @@ function buildPlaylistName(config: RaceConfig): string {
       : config.curveShape === "decreasing"
         ? "Dégressive"
         : "Stable";
-  return `PaceBeat · ${shapeLabel} · ${config.targetDurationMinutes} min`;
+  return `PaceBeat - ${shapeLabel} - ${config.targetDurationMinutes} min`;
 }

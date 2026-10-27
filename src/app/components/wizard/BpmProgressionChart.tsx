@@ -26,9 +26,8 @@ interface ChartPoint {
   title: string;
 }
 
-// Target vs actual is distinguished by stroke style (dashed neutral vs solid brand green),
-// not by a second hue — two brand greens (#1DB954/#1ED760) are too close for CVD-safe
-// categorical use, per the dataviz skill's color-formula checks.
+// Target vs actual is distinguished by stroke style (dashed neutral vs solid accent green),
+// not by a second hue.
 export function BpmProgressionChart({ progression, tracks }: BpmProgressionChartProps) {
   const data: ChartPoint[] = progression.map((point) => ({
     elapsedMin: Math.round((point.elapsedMs / 60_000) * 10) / 10,
@@ -44,35 +43,36 @@ export function BpmProgressionChart({ progression, tracks }: BpmProgressionChart
           swatch={<span className="h-0 w-4 border-t-2 border-dashed border-ink-medium" />}
           label="Objectif"
         />
-        <LegendKey
-          swatch={<span className="h-0.5 w-4 rounded-pill bg-primary" />}
-          label="BPM réel"
-        />
+        <LegendKey swatch={<span className="h-0.5 w-4 bg-primary" />} label="BPM réel" />
       </div>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
-            <CartesianGrid stroke="var(--color-hover)" vertical={false} />
+          <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+            <CartesianGrid stroke="var(--color-rule)" vertical={false} />
             <XAxis
               dataKey="elapsedMin"
-              stroke="var(--color-ink-low)"
-              tick={{ fill: "var(--color-ink-low)", fontSize: 12 }}
-              tickFormatter={(value: number) => `${value}min`}
+              stroke="var(--color-muted)"
+              tick={{ fill: "var(--color-muted)", fontSize: 12 }}
+              tickFormatter={(value: number) => `${Math.round(value)}min`}
+              minTickGap={32}
+              interval="preserveStartEnd"
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              stroke="var(--color-ink-low)"
-              tick={{ fill: "var(--color-ink-low)", fontSize: 12 }}
+              stroke="var(--color-muted)"
+              tick={{ fill: "var(--color-muted)", fontSize: 12 }}
               axisLine={false}
               tickLine={false}
-              width={40}
+              width={48}
+              domain={["dataMin - 5", "dataMax + 5"]}
+              allowDecimals={false}
             />
             <Tooltip content={(props) => <ChartTooltip {...props} />} />
             <Line
               type="monotone"
               dataKey="target"
-              stroke="var(--color-ink-medium)"
+              stroke="var(--color-ink-2)"
               strokeWidth={2}
               strokeDasharray="4 4"
               dot={false}
@@ -81,18 +81,18 @@ export function BpmProgressionChart({ progression, tracks }: BpmProgressionChart
             <Line
               type="stepAfter"
               dataKey="actual"
-              stroke="var(--color-primary)"
+              stroke="var(--color-accent)"
               strokeWidth={2}
               dot={{
                 r: 4,
-                fill: "var(--color-primary)",
-                stroke: "var(--color-card)",
+                fill: "var(--color-accent)",
+                stroke: "var(--color-paper-2)",
                 strokeWidth: 2,
               }}
               activeDot={{
                 r: 6,
-                fill: "var(--color-primary)",
-                stroke: "var(--color-card)",
+                fill: "var(--color-accent)",
+                stroke: "var(--color-paper-2)",
                 strokeWidth: 2,
               }}
               isAnimationActive={false}
@@ -119,10 +119,10 @@ function ChartTooltip({ active, payload }: TooltipContentProps) {
   if (!point) return null;
 
   return (
-    <div className="rounded-micro bg-card px-sm py-xs text-xs text-ink-high shadow-glow">
-      <p className="font-medium">{point.title}</p>
-      <p className="tabular-nums text-ink-medium">
-        Objectif {point.target} BPM · Réel {point.actual} BPM
+    <div className="lp-well px-md py-sm text-xs text-ink-high">
+      <p>{point.title}</p>
+      <p className="text-ink-medium">
+        Objectif {point.target} BPM, réel {point.actual} BPM
       </p>
     </div>
   );

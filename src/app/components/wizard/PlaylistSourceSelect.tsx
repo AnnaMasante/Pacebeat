@@ -29,28 +29,32 @@ export function PlaylistSourceSelect({ value, onChange }: PlaylistSourceSelectPr
 
   return (
     <div className="flex flex-col gap-xs">
-      <label htmlFor="source" className="font-body text-sm tracking-wide text-ink-medium">
+      <label htmlFor="source" className="lp-label">
         Source des morceaux
       </label>
-      <select
-        id="source"
-        value={selectedValue}
-        onChange={(event) => {
-          const nextValue = event.target.value;
-          onChange(
-            nextValue === "liked" ? { type: "liked" } : { type: "playlist", playlistId: nextValue },
-          );
-        }}
-        className="rounded-card bg-hover px-md py-sm font-body text-ink-high focus:ring-1 focus:ring-primary focus:outline-none"
-      >
-        <option value="liked">Liked Songs</option>
-        {playlists?.map((playlist) => (
-          <option key={playlist.id} value={playlist.id}>
-            {playlist.name} ({playlist.trackCount})
-          </option>
-        ))}
-      </select>
-      {error ? <p className="text-sm text-secondary">{error}</p> : null}
+      <div className="lp-select">
+        <select
+          id="source"
+          value={selectedValue}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            onChange(
+              nextValue === "liked"
+                ? { type: "liked" }
+                : { type: "playlist", playlistId: nextValue },
+            );
+          }}
+          className="lp-field"
+        >
+          <option value="liked">Liked Songs</option>
+          {playlists?.map((playlist) => (
+            <option key={playlist.id} value={playlist.id}>
+              {playlist.name} ({playlist.trackCount})
+            </option>
+          ))}
+        </select>
+      </div>
+      {error ? <p className="text-sm text-ink-medium">{error}</p> : null}
     </div>
   );
 }

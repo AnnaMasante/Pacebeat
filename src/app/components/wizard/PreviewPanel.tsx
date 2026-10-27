@@ -13,11 +13,11 @@ interface PreviewPanelProps {
 
 export function PreviewPanel({ playlist, onConfirm, onBack }: PreviewPanelProps) {
   return (
-    <Card className="flex w-full max-w-[36rem] flex-col gap-lg rounded-hero p-lg">
+    <Card className="lp-panel">
       <div>
-        <h1 className="font-display text-2xl font-bold text-ink-high">Ta playlist est prête</h1>
-        <p className="mt-xs font-body text-sm tabular-nums text-ink-medium">
-          {playlist.tracks.length} morceaux · {Math.round(playlist.achievedDurationMs / 60_000)} min
+        <h1 className="text-2xl text-ink-high">Ta playlist est prête</h1>
+        <p className="mt-md text-sm text-ink-medium">
+          {playlist.tracks.length} morceaux, {Math.round(playlist.achievedDurationMs / 60_000)} min
         </p>
       </div>
 
@@ -31,17 +31,17 @@ export function PreviewPanel({ playlist, onConfirm, onBack }: PreviewPanelProps)
       {playlist.tracks.length > 0 ? (
         <>
           <BpmProgressionChart progression={playlist.progression} tracks={playlist.tracks} />
-          <div className="max-h-80 overflow-y-auto">
+          <div className="lp-scroll">
             <TrackList tracks={playlist.tracks} />
           </div>
         </>
       ) : (
-        <p className="font-body text-sm text-ink-medium">
+        <p className="text-sm text-ink-medium">
           Pas assez de données de tempo pour construire une playlist à partir de cette source.
         </p>
       )}
 
-      <div className="flex gap-sm">
+      <div className="flex flex-wrap gap-md">
         <Button variant="ghost" onClick={onBack}>
           Retour
         </Button>

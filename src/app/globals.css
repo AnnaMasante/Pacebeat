@@ -1,26 +1,32 @@
+/* Hallmark · shape: Session · genre: atmospheric · theme: Terminal (chosen over Spore and Kiln for the green and the data-first mono) · redesign: full (landing and wizard)
+ * hero: Split · nav: kept (the shared wordmark, set in the page face) · footer: kept (the Deezer attribution) · imagery: the product's own curves, drawn as bars · signature: the beat curve, a rising BPM ramp that pulses bar by bar
+ * axes: dark/mono/chromatic-green · posture: committed · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E3 S4 R4 V4 · weakest: E, the three curve wells share one composition, so the bars alone carry the difference between them */
 @import "tailwindcss";
+@import "./tokens.css";
+@import "./components.css";
 
 @theme {
-  --color-canvas: #000000;
-  --color-surface: #121212;
-  --color-card: #181818;
-  --color-hover: #282828;
-  --color-overlay: #333333;
+  --color-canvas: var(--color-paper);
+  --color-surface: var(--color-paper-2);
+  --color-card: var(--color-paper-2);
+  --color-hover: var(--color-paper-3);
+  --color-overlay: var(--color-paper-3);
 
-  --color-primary: #1db954;
-  --color-secondary: #1ed760;
+  --color-primary: var(--color-accent);
+  --color-secondary: var(--color-ink-2);
 
-  --color-ink-high: #ffffff;
-  --color-ink-medium: #b3b3b3;
-  --color-ink-low: #727272;
+  --color-ink-high: var(--color-ink);
+  --color-ink-medium: var(--color-ink-2);
+  --color-ink-low: var(--color-muted);
 
-  --font-display: var(--font-plus-jakarta-sans);
-  --font-body: var(--font--system-ui);
+  --font-display: var(--lp-font);
+  --font-body: var(--lp-font);
 
-  --radius-pill: 9999px;
-  --radius-hero: 3rem;
-  --radius-card: 2rem;
-  --radius-micro: 0.5rem;
+  --radius-pill: 0;
+  --radius-hero: 0;
+  --radius-card: 0;
+  --radius-micro: 0;
 
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -28,6 +34,6 @@
   --spacing-lg: 1.5rem;
   --spacing-xl: 2.5rem;
 
-  --shadow-glow: 0 8px 24px rgba(29, 185, 84, 0.25);
-  --shadow-glow-intense: 0 8px 24px rgba(30, 215, 96, 0.35);
+  --shadow-glow: none;
+  --shadow-glow-intense: none;
 }

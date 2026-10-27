@@ -22,7 +22,14 @@ const OPTIONS: SegmentedOption<CurveShape>[] = [
 
 function CurveIcon({ path }: { path: string }): ReactNode {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2}>
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
       <path d={path} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );

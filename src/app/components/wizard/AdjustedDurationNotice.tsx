@@ -36,7 +36,7 @@ export function AdjustedDurationNotice({
   if (notices.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-xs">
+    <div className="flex flex-col gap-sm">
       {notices.map((notice) => (
         <Toast key={notice} variant="info">
           {notice}

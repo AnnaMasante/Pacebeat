@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import Link from "next/link";
+import { Plus_Jakarta_Sans, Inter, Martian_Mono } from "next/font/google";
 import "./globals.css";
+import { SignInForm } from "@/app/components/landing/SignInForm";
 import { AttributionFooter } from "@/app/components/layout/AttributionFooter";
-import GhostFibers from "@/app/components/backgrounds/GhostFibers";
 import { auth, signOut } from "@/infrastructure/auth/authOptions";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -15,53 +16,38 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const martianMono = Martian_Mono({
+  variable: "--font-martian-mono",
+  subsets: ["latin"],
+  axes: ["wdth"],
+});
+
+const description = "Génère une playlist de course qui suit ta courbe d'intensité idéale.";
+
 export const metadata: Metadata = {
   title: "PaceBeat",
-  description: "Génère une playlist de course qui suit ta courbe d'intensité idéale.",
+  description,
   icons: { icon: "/favicon.svg" },
+  openGraph: { title: "PaceBeat", description, locale: "fr_FR", type: "website" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a110c",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const session = await auth();
 
   return (
-    <html lang="fr" className={`${plusJakartaSans.variable} ${inter.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-canvas font-body text-ink-high">
-        <div className="pointer-events-none fixed inset-0 -z-10">
-          <GhostFibers
-            lineColor="#0c2f18"
-            glowColor="#136a32"
-            speed={0.2}
-            scale={2}
-            rotation={0}
-            rotationSpeed={0.25}
-            layers={4}
-            waveAmplitude={0.015}
-            waveFrequency={3}
-            waveSpeed={0.15}
-            layerSpeed={0.08}
-            twist={0.1}
-            twistFrequency={5}
-            twistSpeed={1.2}
-            lineFrequency={5}
-            lineSpacing={2}
-            lineSharpness={16}
-            glowFalloff={10}
-            glowIntensity={1.6}
-            brightness={2}
-            blueBoost={1.25}
-            vignette={0.8}
-            grain={0.05}
-            dpr={1}
-            lightMode={false}
-            fps={60}
-            paused={false}
-          />
-        </div>
-        <header className="flex items-center justify-between px-lg py-md">
-          <a href="/" className="font-display text-lg font-bold text-ink-high">
+    <html
+      lang="fr"
+      className={`${plusJakartaSans.variable} ${inter.variable} ${martianMono.variable} h-full antialiased`}
+    >
+      <body className="lp-ground flex min-h-full flex-col font-body text-ink-high">
+        <header className="lp-container flex items-center justify-between py-md">
+          <Link href="/" className="font-display text-lg font-bold text-ink-high">
             PaceBeat
-          </a>
+          </Link>
           {session?.accessToken && (
             <form
               action={async () => {
@@ -74,6 +60,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               </button>
             </form>
           )}
+          {!session?.accessToken && <SignInForm compact />}
         </header>
         <div className="flex flex-1 flex-col">{children}</div>
         <AttributionFooter />

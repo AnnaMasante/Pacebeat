@@ -18,7 +18,7 @@ export function SegmentedControl<T extends string>({
   onChange,
 }: SegmentedControlProps<T>) {
   return (
-    <div className="flex gap-xs rounded-pill bg-card p-xs" role="radiogroup">
+    <div className="lp-seg" role="radiogroup">
       {options.map((option) => {
         const isActive = option.value === value;
         return (
@@ -28,9 +28,7 @@ export function SegmentedControl<T extends string>({
             role="radio"
             aria-checked={isActive}
             onClick={() => onChange(option.value)}
-            className={`flex flex-1 items-center justify-center gap-xs rounded-pill px-md py-sm font-body text-sm font-medium transition-colors ${
-              isActive ? "bg-primary text-black" : "text-ink-medium hover:text-ink-high"
-            }`}
+            className="lp-seg__item"
           >
             {option.icon}
             {option.label}

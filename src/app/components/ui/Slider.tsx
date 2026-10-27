@@ -21,24 +21,42 @@ export function Slider({
 }: SliderProps) {
   return (
     <div className="flex flex-col gap-sm">
-      <div className="flex items-center justify-between">
-        <label htmlFor={id} className="font-body text-sm tracking-wide text-ink-medium">
+      <div className="flex items-baseline justify-between">
+        <label htmlFor={id} className="lp-label">
           {label}
         </label>
-        <span className="font-display text-lg font-semibold tabular-nums text-ink-high">
-          {formatValue ? formatValue(value) : value}
-        </span>
+        <span className="text-3xl text-ink-high">{formatValue ? formatValue(value) : value}</span>
       </div>
-      <input
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-        className="h-1 w-full cursor-pointer appearance-none rounded-pill bg-hover accent-primary"
-      />
+      <div className="lp-stepper">
+        <button
+          type="button"
+          className="lp-step"
+          aria-label={`${label} : moins`}
+          disabled={value <= min}
+          onClick={() => onChange(Math.max(min, value - step))}
+        >
+          -
+        </button>
+        <input
+          id={id}
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={(event) => onChange(Number(event.target.value))}
+          className="lp-range"
+        />
+        <button
+          type="button"
+          className="lp-step"
+          aria-label={`${label} : plus`}
+          disabled={value >= max}
+          onClick={() => onChange(Math.min(max, value + step))}
+        >
+          +
+        </button>
+      </div>
     </div>
   );
 }
